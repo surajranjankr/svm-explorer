@@ -43,6 +43,7 @@ export const ParameterGrid = ({ data, kernel }: ParameterGridProps) => {
                   data={data}
                   kernel={kernel}
                   gamma={gamma}
+                  C={c}
                   showBoundary={true}
                 />
               </Card>

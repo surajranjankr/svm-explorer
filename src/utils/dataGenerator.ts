@@ -95,13 +95,15 @@ export const identifySupportVectors = (
   C: number
 ): DataPoint[] => {
   // Support vectors are the points closest to the decision boundary
-  // Calculate distance from the diagonal boundary (x + y = 100)
+  // For linear: decision boundary is y = -x + 105
   return data.map((point) => {
-    const distanceFromBoundary = Math.abs(point.x + point.y - 100) / Math.sqrt(2);
+    // Distance from point to line: |ax + by + c| / sqrt(a^2 + b^2)
+    // Line equation: x + y - 105 = 0
+    const distanceFromBoundary = Math.abs(point.x + point.y - 105) / Math.sqrt(2);
     
     // Points within a threshold distance are support vectors
     // Higher C means stricter margin, fewer support vectors
-    const threshold = 15 + (10 - C) * 3;
+    const threshold = 12 + (10 - C) * 2;
     const isNearBoundary = distanceFromBoundary < threshold;
     
     return {
@@ -111,32 +113,70 @@ export const identifySupportVectors = (
   });
 };
 
-// Calculate decision boundary points (simplified)
+// Calculate decision boundary points based on kernel type
 export const calculateDecisionBoundary = (
   kernel: string,
-  gamma: number
+  gamma: number,
+  marginType?: MarginType
 ): { x: number; y: number }[] => {
   const points: { x: number; y: number }[] = [];
   
   if (kernel === "linear") {
-    // Simple diagonal line
-    for (let x = 0; x <= 100; x += 5) {
-      points.push({ x, y: 100 - x });
+    // Optimal linear boundary: y = -x + 105
+    // This properly separates the classes
+    for (let x = 0; x <= 100; x += 2) {
+      const y = -x + 105;
+      if (y >= 0 && y <= 100) {
+        points.push({ x, y });
+      }
     }
   } else if (kernel === "rbf" || kernel === "sigmoid") {
-    // Curved boundary
+    // Curved boundary for non-linear kernels
     for (let x = 0; x <= 100; x += 2) {
       const y = 50 + 20 * Math.sin((x / 100) * Math.PI * 2 * gamma);
-      points.push({ x, y });
+      if (y >= 0 && y <= 100) {
+        points.push({ x, y });
+      }
     }
   } else if (kernel === "polynomial") {
     // Polynomial curve
     for (let x = 0; x <= 100; x += 2) {
       const normalized = (x - 50) / 50;
       const y = 50 + 20 * Math.pow(normalized, 3) * gamma;
-      points.push({ x, y });
+      if (y >= 0 && y <= 100) {
+        points.push({ x, y });
+      }
     }
   }
   
   return points;
+};
+
+// Calculate margin boundaries (parallel lines to decision boundary)
+export const calculateMargins = (
+  kernel: string,
+  C: number
+): { upper: { x: number; y: number }[]; lower: { x: number; y: number }[] } => {
+  const marginWidth = 10 / C; // Margin width inversely proportional to C
+  
+  if (kernel === "linear") {
+    const upper: { x: number; y: number }[] = [];
+    const lower: { x: number; y: number }[] = [];
+    
+    for (let x = 0; x <= 100; x += 2) {
+      const yUpper = -x + 105 + marginWidth;
+      const yLower = -x + 105 - marginWidth;
+      
+      if (yUpper >= 0 && yUpper <= 100) {
+        upper.push({ x, y: yUpper });
+      }
+      if (yLower >= 0 && yLower <= 100) {
+        lower.push({ x, y: yLower });
+      }
+    }
+    
+    return { upper, lower };
+  }
+  
+  return { upper: [], lower: [] };
 };

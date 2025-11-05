@@ -62,7 +62,7 @@ const Visualizer = () => {
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-6">
               <div className="aspect-square max-h-[600px]">
-                <SVMPlot data={data} kernel={kernel} gamma={gamma} />
+                <SVMPlot data={data} kernel={kernel} gamma={gamma} C={C} />
               </div>
               <div className="mt-4 flex gap-4 text-sm">
                 <div className="flex items-center gap-2">

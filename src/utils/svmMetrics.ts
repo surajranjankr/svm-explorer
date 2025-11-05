@@ -1,9 +1,11 @@
 import { DataPoint, PerformanceMetrics, ConfusionMatrix } from "@/types/svm";
 
-// Simulate predictions based on a simple decision boundary
+// Simulate predictions based on decision boundary: y = -x + 105
 const predictLabel = (point: DataPoint): 0 | 1 => {
-  // Simple diagonal boundary for simulation
-  return point.x + point.y > 100 ? 0 : 1;
+  // Decision boundary: y = -x + 105
+  // Points above the line (y > -x + 105) are class 1
+  // Points below the line (y < -x + 105) are class 0
+  return point.y > -point.x + 105 ? 1 : 0;
 };
 
 // Calculate confusion matrix

@@ -1,19 +1,25 @@
 import { useMemo } from "react";
 import { DataPoint } from "@/types/svm";
-import { calculateDecisionBoundary } from "@/utils/dataGenerator";
+import { calculateDecisionBoundary, calculateMargins } from "@/utils/dataGenerator";
 
 interface SVMPlotProps {
   data: DataPoint[];
   kernel: string;
   gamma: number;
+  C: number;
   showBoundary?: boolean;
   className?: string;
 }
 
-export const SVMPlot = ({ data, kernel, gamma, showBoundary = true, className = "" }: SVMPlotProps) => {
+export const SVMPlot = ({ data, kernel, gamma, C, showBoundary = true, className = "" }: SVMPlotProps) => {
   const boundaryPoints = useMemo(
     () => (showBoundary ? calculateDecisionBoundary(kernel, gamma) : []),
     [kernel, gamma, showBoundary]
+  );
+
+  const margins = useMemo(
+    () => (showBoundary && kernel === "linear" ? calculateMargins(kernel, C) : { upper: [], lower: [] }),
+    [kernel, C, showBoundary]
   );
 
   return (
@@ -46,15 +52,36 @@ export const SVMPlot = ({ data, kernel, gamma, showBoundary = true, className = 
         </g>
       ))}
 
-      {/* Decision boundary */}
+      {/* Margin boundaries */}
+      {showBoundary && margins.upper.length > 1 && (
+        <>
+          <path
+            d={`M ${margins.upper.map((p) => `${p.x},${p.y}`).join(" L ")}`}
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth="0.5"
+            fill="none"
+            strokeDasharray="1,1"
+            opacity="0.4"
+          />
+          <path
+            d={`M ${margins.lower.map((p) => `${p.x},${p.y}`).join(" L ")}`}
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth="0.5"
+            fill="none"
+            strokeDasharray="1,1"
+            opacity="0.4"
+          />
+        </>
+      )}
+
+      {/* Decision boundary (hyperplane) */}
       {showBoundary && boundaryPoints.length > 1 && (
         <path
           d={`M ${boundaryPoints.map((p) => `${p.x},${p.y}`).join(" L ")}`}
           stroke="hsl(var(--decision-boundary))"
-          strokeWidth="0.8"
+          strokeWidth="1.2"
           fill="none"
-          strokeDasharray="2,2"
-          opacity="0.8"
+          opacity="0.9"
         />
       )}
 
