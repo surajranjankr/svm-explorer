@@ -1,6 +1,6 @@
 import { DataPoint, MarginType } from "@/types/svm";
 
-const DATASET_SIZE = 100;
+const DATASET_SIZE = 18; // Reduced for better understanding
 
 // Generate synthetic dataset based on margin type
 export const generateDataset = (marginType: MarginType): DataPoint[] => {
@@ -8,81 +8,102 @@ export const generateDataset = (marginType: MarginType): DataPoint[] => {
 
   switch (marginType) {
     case "hard":
-      // Linearly separable data with clear margin
-      for (let i = 0; i < DATASET_SIZE / 2; i++) {
-        data.push({
-          x: Math.random() * 40 + 10,
-          y: Math.random() * 40 + 50,
-          label: 1,
-        });
-        data.push({
-          x: Math.random() * 40 + 50,
-          y: Math.random() * 40 + 10,
-          label: 0,
-        });
-      }
+      // Perfectly linearly separable - clear demonstration of hard margin
+      // Class 1: Top-left region (disease/high-risk)
+      const class1Points = [
+        { x: 15, y: 75 }, { x: 20, y: 80 }, { x: 25, y: 70 },
+        { x: 30, y: 85 }, { x: 18, y: 65 }, { x: 28, y: 75 },
+        { x: 22, y: 68 }, { x: 32, y: 78 }, { x: 16, y: 82 }
+      ];
+      class1Points.forEach(point => {
+        data.push({ ...point, label: 1 });
+      });
+
+      // Class 0: Bottom-right region (healthy/low-risk)
+      const class0Points = [
+        { x: 70, y: 25 }, { x: 75, y: 30 }, { x: 65, y: 20 },
+        { x: 80, y: 35 }, { x: 72, y: 18 }, { x: 68, y: 28 },
+        { x: 78, y: 22 }, { x: 82, y: 32 }, { x: 66, y: 25 }
+      ];
+      class0Points.forEach(point => {
+        data.push({ ...point, label: 0 });
+      });
       break;
 
     case "soft":
-      // Mostly separable with some overlap
-      for (let i = 0; i < DATASET_SIZE / 2; i++) {
-        // Class 1 with some noise
-        const noise1 = Math.random() < 0.1 ? 20 : 0;
-        data.push({
-          x: Math.random() * 40 + 10 + noise1,
-          y: Math.random() * 40 + 50 - noise1,
-          label: 1,
-        });
-        // Class 0 with some noise
-        const noise2 = Math.random() < 0.1 ? 20 : 0;
-        data.push({
-          x: Math.random() * 40 + 50 - noise2,
-          y: Math.random() * 40 + 10 + noise2,
-          label: 0,
-        });
-      }
+      // Mostly separable with intentional overlap to show soft margin concept
+      // Class 1: Top-left with some outliers
+      const soft1Points = [
+        { x: 18, y: 75 }, { x: 22, y: 82 }, { x: 28, y: 70 },
+        { x: 25, y: 78 }, { x: 20, y: 68 }, { x: 32, y: 85 },
+        { x: 45, y: 55 }, // Outlier crossing boundary
+        { x: 16, y: 80 }, { x: 30, y: 72 }
+      ];
+      soft1Points.forEach(point => {
+        data.push({ ...point, label: 1 });
+      });
+
+      // Class 0: Bottom-right with some outliers
+      const soft0Points = [
+        { x: 72, y: 25 }, { x: 78, y: 30 }, { x: 68, y: 20 },
+        { x: 75, y: 28 }, { x: 80, y: 22 }, { x: 70, y: 32 },
+        { x: 50, y: 48 }, // Outlier crossing boundary
+        { x: 82, y: 26 }, { x: 66, y: 24 }
+      ];
+      soft0Points.forEach(point => {
+        data.push({ ...point, label: 0 });
+      });
       break;
 
     case "nonlinear":
-      // Non-linearly separable (circular pattern)
-      for (let i = 0; i < DATASET_SIZE; i++) {
-        const angle = (Math.random() * Math.PI * 2);
-        const radius = Math.random() * 20 + 15;
-        const centerX = 50;
-        const centerY = 50;
-        
-        if (Math.random() < 0.5) {
-          // Inner circle (class 1)
-          data.push({
-            x: centerX + Math.cos(angle) * radius,
-            y: centerY + Math.sin(angle) * radius,
-            label: 1,
-          });
-        } else {
-          // Outer circle (class 0)
-          const outerRadius = radius + 25;
-          data.push({
-            x: centerX + Math.cos(angle) * outerRadius,
-            y: centerY + Math.sin(angle) * outerRadius,
-            label: 0,
-          });
-        }
-      }
+      // Circular pattern - requires kernel trick
+      const centerX = 50;
+      const centerY = 50;
+      
+      // Inner circle - Class 1
+      const innerAngles = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+      innerAngles.forEach(angle => {
+        const rad = (angle * Math.PI) / 180;
+        const radius = 18 + Math.random() * 6;
+        data.push({
+          x: centerX + Math.cos(rad) * radius,
+          y: centerY + Math.sin(rad) * radius,
+          label: 1,
+        });
+      });
+
+      // Outer ring - Class 0
+      const outerAngles = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5, 382.5];
+      outerAngles.forEach(angle => {
+        const rad = (angle * Math.PI) / 180;
+        const radius = 32 + Math.random() * 6;
+        data.push({
+          x: centerX + Math.cos(rad) * radius,
+          y: centerY + Math.sin(rad) * radius,
+          label: 0,
+        });
+      });
       break;
   }
 
   return data;
 };
 
-// Identify support vectors (simplified simulation)
+// Identify support vectors (simplified but educational)
 export const identifySupportVectors = (
   data: DataPoint[],
   C: number
 ): DataPoint[] => {
-  // In a real SVM, support vectors are found during training
-  // Here we simulate by finding points near the decision boundary
+  // Support vectors are the points closest to the decision boundary
+  // Calculate distance from the diagonal boundary (x + y = 100)
   return data.map((point) => {
-    const isNearBoundary = Math.random() < 0.15; // Simulate ~15% as support vectors
+    const distanceFromBoundary = Math.abs(point.x + point.y - 100) / Math.sqrt(2);
+    
+    // Points within a threshold distance are support vectors
+    // Higher C means stricter margin, fewer support vectors
+    const threshold = 15 + (10 - C) * 3;
+    const isNearBoundary = distanceFromBoundary < threshold;
+    
     return {
       ...point,
       isSupportVector: isNearBoundary,

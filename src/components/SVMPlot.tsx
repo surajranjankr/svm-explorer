@@ -58,32 +58,34 @@ export const SVMPlot = ({ data, kernel, gamma, showBoundary = true, className = 
         />
       )}
 
-      {/* Data points */}
+      {/* Data points - larger and more visible */}
       {data.map((point, i) => (
         <g key={i}>
-          {/* Support vector ring */}
+          {/* Support vector ring - more prominent */}
           {point.isSupportVector && (
             <circle
               cx={point.x}
               cy={point.y}
-              r="2.5"
+              r="3.5"
               fill="none"
               stroke="hsl(var(--support-vector))"
-              strokeWidth="0.6"
-              opacity="0.8"
+              strokeWidth="1"
+              opacity="0.9"
             />
           )}
-          {/* Data point */}
+          {/* Data point - larger for visibility */}
           <circle
             cx={point.x}
             cy={point.y}
-            r="1.5"
+            r="2"
             fill={
               point.label === 1
                 ? "hsl(var(--class-positive))"
                 : "hsl(var(--class-negative))"
             }
-            opacity="0.9"
+            opacity="1"
+            stroke="hsl(var(--card))"
+            strokeWidth="0.5"
           />
         </g>
       ))}
