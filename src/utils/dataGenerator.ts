@@ -96,19 +96,27 @@ export const identifySupportVectors = (
 ): DataPoint[] => {
   // Support vectors are the points closest to the decision boundary
   // For linear: decision boundary is y = -x + 105
-  return data.map((point) => {
+  const dataWithDistances = data.map((point) => {
     // Distance from point to line: |ax + by + c| / sqrt(a^2 + b^2)
     // Line equation: x + y - 105 = 0
     const distanceFromBoundary = Math.abs(point.x + point.y - 105) / Math.sqrt(2);
-    
-    // Points within a threshold distance are support vectors
-    // Higher C means stricter margin, fewer support vectors
-    const threshold = 12 + (10 - C) * 2;
-    const isNearBoundary = distanceFromBoundary < threshold;
+    return { point, distance: distanceFromBoundary };
+  });
+  
+  // Sort by distance to find closest points
+  dataWithDistances.sort((a, b) => a.distance - b.distance);
+  
+  // Calculate margin width - higher C means narrower margin, fewer support vectors
+  const marginWidth = 10 / C;
+  
+  // Mark points within the margin as support vectors
+  return dataWithDistances.map(({ point, distance }) => {
+    // Points within margin width are support vectors
+    const isSupportVector = distance <= marginWidth;
     
     return {
       ...point,
-      isSupportVector: isNearBoundary,
+      isSupportVector,
     };
   });
 };

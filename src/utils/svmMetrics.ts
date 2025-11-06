@@ -28,12 +28,11 @@ const predictLabel = (
 ): 0 | 1 => {
   if (kernel === "linear") {
     // Linear decision boundary: y = -x + 105
-    // Adjust slightly based on C parameter
-    const offset = 105 - (C - 1) * 2;
-    return point.y > -point.x + offset ? 1 : 0;
+    // Simple linear classification
+    return point.y > -point.x + 105 ? 1 : 0;
   }
 
-  // For non-linear kernels, use kernel trick
+  // For non-linear kernels, use kernel-based decision function
   const supportVectors = allPoints.filter((p) => p.isSupportVector);
   
   if (supportVectors.length === 0) {
@@ -42,8 +41,11 @@ const predictLabel = (
   }
 
   let decision = 0;
+  
+  // SVM decision function: sum of alpha * y * K(x, x_i)
   supportVectors.forEach((sv) => {
-    const alpha = sv.label === 1 ? 1 : -1;
+    const alpha = 1.0; // Simplified - in real SVM this is learned
+    const y_i = sv.label === 1 ? 1 : -1;
     let kernelValue = 0;
 
     switch (kernel) {
@@ -58,14 +60,16 @@ const predictLabel = (
         break;
     }
 
-    decision += alpha * kernelValue;
+    decision += alpha * y_i * kernelValue;
   });
 
-  // Add bias term based on support vectors
-  const bias = supportVectors.reduce((sum, sv) => {
-    return sum + (sv.label === 1 ? 0.5 : -0.5);
-  }, 0) / supportVectors.length;
+  // Bias term - calculated from support vectors
+  // For visualization purposes, we adjust based on the distribution
+  const positiveSVs = supportVectors.filter(sv => sv.label === 1).length;
+  const negativeSVs = supportVectors.filter(sv => sv.label === 0).length;
+  const bias = (positiveSVs - negativeSVs) * 0.1;
 
+  // Classification: sign(decision + bias)
   return decision + bias > 0 ? 1 : 0;
 };
 
