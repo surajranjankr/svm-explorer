@@ -21,19 +21,29 @@ const sigmoidKernel = (x1: number, y1: number, x2: number, y2: number): number =
 // Predict label based on kernel and parameters
 const predictLabel = (
   point: DataPoint,
-  supportVectors: DataPoint[],
+  allPoints: DataPoint[],
   kernel: KernelType,
-  gamma: number
+  gamma: number,
+  C: number
 ): 0 | 1 => {
   if (kernel === "linear") {
     // Linear decision boundary: y = -x + 105
+    // Adjust slightly based on C parameter
+    const offset = 105 - (C - 1) * 2;
+    return point.y > -point.x + offset ? 1 : 0;
+  }
+
+  // For non-linear kernels, use kernel trick
+  const supportVectors = allPoints.filter((p) => p.isSupportVector);
+  
+  if (supportVectors.length === 0) {
+    // Fallback if no support vectors
     return point.y > -point.x + 105 ? 1 : 0;
   }
 
-  // For non-linear kernels, use kernel trick with support vectors
   let decision = 0;
   supportVectors.forEach((sv) => {
-    const weight = sv.label === 1 ? 1 : -1;
+    const alpha = sv.label === 1 ? 1 : -1;
     let kernelValue = 0;
 
     switch (kernel) {
@@ -48,27 +58,31 @@ const predictLabel = (
         break;
     }
 
-    decision += weight * kernelValue;
+    decision += alpha * kernelValue;
   });
 
-  return decision > 0 ? 1 : 0;
+  // Add bias term based on support vectors
+  const bias = supportVectors.reduce((sum, sv) => {
+    return sum + (sv.label === 1 ? 0.5 : -0.5);
+  }, 0) / supportVectors.length;
+
+  return decision + bias > 0 ? 1 : 0;
 };
 
 // Calculate confusion matrix
 export const calculateConfusionMatrix = (
   data: DataPoint[],
   kernel: KernelType,
-  gamma: number
+  gamma: number,
+  C: number
 ): ConfusionMatrix => {
   let truePositive = 0;
   let trueNegative = 0;
   let falsePositive = 0;
   let falseNegative = 0;
 
-  const supportVectors = data.filter((d) => d.isSupportVector);
-
   data.forEach((point) => {
-    const predicted = predictLabel(point, supportVectors, kernel, gamma);
+    const predicted = predictLabel(point, data, kernel, gamma, C);
     const actual = point.label;
 
     if (predicted === 1 && actual === 1) truePositive++;

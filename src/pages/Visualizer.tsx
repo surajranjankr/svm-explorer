@@ -28,8 +28,8 @@ const Visualizer = () => {
   const data = useMemo(() => identifySupportVectors(rawData, C), [rawData, C]);
   
   const confusionMatrix = useMemo(
-    () => calculateConfusionMatrix(data, kernel, gamma),
-    [data, kernel, gamma]
+    () => calculateConfusionMatrix(data, kernel, gamma, C),
+    [data, kernel, gamma, C]
   );
   const metrics = useMemo(() => calculateMetrics(confusionMatrix), [confusionMatrix]);
   const terms = professionTerms[profession];
