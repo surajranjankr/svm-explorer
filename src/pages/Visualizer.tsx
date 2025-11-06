@@ -27,7 +27,10 @@ const Visualizer = () => {
   const rawData = useMemo(() => generateDataset(marginType), [marginType]);
   const data = useMemo(() => identifySupportVectors(rawData, C), [rawData, C]);
   
-  const confusionMatrix = useMemo(() => calculateConfusionMatrix(data), [data]);
+  const confusionMatrix = useMemo(
+    () => calculateConfusionMatrix(data, kernel, gamma),
+    [data, kernel, gamma]
+  );
   const metrics = useMemo(() => calculateMetrics(confusionMatrix), [confusionMatrix]);
   const terms = professionTerms[profession];
 
