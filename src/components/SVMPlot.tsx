@@ -13,13 +13,13 @@ interface SVMPlotProps {
 
 export const SVMPlot = ({ data, kernel, gamma, C, showBoundary = true, className = "" }: SVMPlotProps) => {
   const boundaryPoints = useMemo(
-    () => (showBoundary ? calculateDecisionBoundary(kernel, gamma) : []),
-    [kernel, gamma, showBoundary]
+    () => (showBoundary ? calculateDecisionBoundary(kernel, gamma, data, C) : []),
+    [data, kernel, gamma, C, showBoundary]
   );
 
   const margins = useMemo(
-    () => (showBoundary && kernel === "linear" ? calculateMargins(kernel, C) : { upper: [], lower: [] }),
-    [kernel, C, showBoundary]
+    () => (showBoundary && kernel === "linear" ? calculateMargins(kernel, C, data) : { upper: [], lower: [] }),
+    [data, kernel, C, showBoundary]
   );
 
   return (

@@ -27,9 +27,29 @@ const predictLabel = (
   C: number
 ): 0 | 1 => {
   if (kernel === "linear") {
-    // Linear decision boundary: y = -x + 105
-    // Simple linear classification
-    return point.y > -point.x + 105 ? 1 : 0;
+    // Data-driven linear hyperplane using centroids
+    const class1 = allPoints.filter((d) => d.label === 1);
+    const class0 = allPoints.filter((d) => d.label === 0);
+
+    let a = 1, b = 1, c = -105; // fallback
+    if (class1.length && class0.length) {
+      const c1 = {
+        x: class1.reduce((s, p) => s + p.x, 0) / class1.length,
+        y: class1.reduce((s, p) => s + p.y, 0) / class1.length,
+      };
+      const c0 = {
+        x: class0.reduce((s, p) => s + p.x, 0) / class0.length,
+        y: class0.reduce((s, p) => s + p.y, 0) / class0.length,
+      };
+      const w = { x: c1.x - c0.x, y: c1.y - c0.y };
+      a = w.x; b = w.y;
+      const m = { x: (c1.x + c0.x) / 2, y: (c1.y + c0.y) / 2 };
+      c = -(a * m.x + b * m.y);
+    }
+    const norm = Math.sqrt(a * a + b * b) || 1;
+    const cAdj = c + 6 * (1 / Math.max(C, 0.1) - 1) * norm;
+    const decision = a * point.x + b * point.y + cAdj;
+    return decision > 0 ? 1 : 0;
   }
 
   // For non-linear kernels, use kernel-based decision function
@@ -63,13 +83,9 @@ const predictLabel = (
     decision += alpha * y_i * kernelValue;
   });
 
-  // Bias term - calculated from support vectors
-  // For visualization purposes, we adjust based on the distribution
   const positiveSVs = supportVectors.filter(sv => sv.label === 1).length;
   const negativeSVs = supportVectors.filter(sv => sv.label === 0).length;
   const bias = (positiveSVs - negativeSVs) * 0.1;
-
-  // Classification: sign(decision + bias)
   return decision + bias > 0 ? 1 : 0;
 };
 
