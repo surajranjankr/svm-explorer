@@ -34,7 +34,7 @@ const Visualizer = () => {
   const metrics = useMemo(() => calculateMetrics(confusionMatrix), [confusionMatrix]);
   const terms = professionTerms[profession];
 
-  const kernels: KernelType[] = ["linear", "rbf", "polynomial", "sigmoid"];
+  const kernels: KernelType[] = ["linear", "rbf", "polynomial"];
 
   return (
     <div className="min-h-screen bg-background">

@@ -2,7 +2,7 @@ export type Profession = "medical" | "finance" | "marketing" | "engineering";
 
 export type MarginType = "hard" | "soft" | "nonlinear";
 
-export type KernelType = "linear" | "rbf" | "polynomial" | "sigmoid";
+export type KernelType = "linear" | "rbf" | "polynomial";
 
 export interface DataPoint {
   x: number;

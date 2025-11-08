@@ -18,8 +18,8 @@ export const SVMPlot = ({ data, kernel, gamma, C, showBoundary = true, className
   );
 
   const margins = useMemo(
-    () => (showBoundary && kernel === "linear" ? calculateMargins(kernel, C, data) : { upper: [], lower: [] }),
-    [data, kernel, C, showBoundary]
+    () => (showBoundary ? calculateMargins(kernel, C, data, gamma) : { upper: [], lower: [] }),
+    [data, kernel, gamma, C, showBoundary]
   );
 
   return (

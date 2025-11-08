@@ -12,11 +12,6 @@ const polynomialKernel = (x1: number, y1: number, x2: number, y2: number, degree
   return Math.pow(dot + 1, degree);
 };
 
-// Sigmoid kernel function
-const sigmoidKernel = (x1: number, y1: number, x2: number, y2: number): number => {
-  const dot = x1 * x2 + y1 * y2;
-  return Math.tanh(0.01 * dot + 1);
-};
 
 // Predict label based on kernel and parameters
 const predictLabel = (
@@ -74,9 +69,6 @@ const predictLabel = (
         break;
       case "polynomial":
         kernelValue = polynomialKernel(point.x, point.y, sv.x, sv.y, 3);
-        break;
-      case "sigmoid":
-        kernelValue = sigmoidKernel(point.x, point.y, sv.x, sv.y);
         break;
     }
 

@@ -185,8 +185,8 @@ export const calculateDecisionBoundary = (
     }
 
     return points;
-  } else if (kernel === "rbf" || kernel === "sigmoid") {
-    // Curved boundary for non-linear kernels (illustrative)
+  } else if (kernel === "rbf") {
+    // Curved boundary for RBF kernel (illustrative)
     for (let x = 0; x <= 100; x += 2) {
       const y = 50 + 20 * Math.sin((x / 100) * Math.PI * 2 * gamma);
       if (y >= 0 && y <= 100) {
@@ -211,7 +211,8 @@ export const calculateDecisionBoundary = (
 export const calculateMargins = (
   kernel: string,
   C: number,
-  data?: DataPoint[]
+  data?: DataPoint[],
+  gamma?: number
 ): { upper: { x: number; y: number }[]; lower: { x: number; y: number }[] } => {
   const marginDistance = 10 / Math.max(C, 0.1); // Margin width inversely proportional to C
   
@@ -262,6 +263,37 @@ export const calculateMargins = (
       }
     }
 
+    return { upper, lower };
+  } else if (kernel === "rbf") {
+    // Curved margins for RBF kernel
+    const upper: { x: number; y: number }[] = [];
+    const lower: { x: number; y: number }[] = [];
+    
+    for (let x = 0; x <= 100; x += 2) {
+      const centerY = 50 + 20 * Math.sin((x / 100) * Math.PI * 2 * (gamma || 1));
+      const yUpper = centerY + marginDistance;
+      const yLower = centerY - marginDistance;
+      
+      if (yUpper >= 0 && yUpper <= 100) upper.push({ x, y: yUpper });
+      if (yLower >= 0 && yLower <= 100) lower.push({ x, y: yLower });
+    }
+    
+    return { upper, lower };
+  } else if (kernel === "polynomial") {
+    // Curved margins for polynomial kernel
+    const upper: { x: number; y: number }[] = [];
+    const lower: { x: number; y: number }[] = [];
+    
+    for (let x = 0; x <= 100; x += 2) {
+      const normalized = (x - 50) / 50;
+      const centerY = 50 + 20 * Math.pow(normalized, 3) * (gamma || 1);
+      const yUpper = centerY + marginDistance;
+      const yLower = centerY - marginDistance;
+      
+      if (yUpper >= 0 && yUpper <= 100) upper.push({ x, y: yUpper });
+      if (yLower >= 0 && yLower <= 100) lower.push({ x, y: yLower });
+    }
+    
     return { upper, lower };
   }
   
