@@ -35,7 +35,7 @@ const ProfessionSelect = () => {
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h2 className="text-4xl font-bold">Choose Your Profession</h2>
+            <h2 className="text-4xl font-bold no-underline">Choose Your Profession</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Select your field to see SVM explained with terminology you already know.
               We'll translate complex ML concepts into your domain language.

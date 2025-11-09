@@ -65,7 +65,7 @@ const DatasetSelect = () => {
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold">Understanding Margin Types</h2>
+            <h2 className="text-3xl font-bold no-underline">Understanding Margin Types</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Different real-world scenarios require different approaches. Start simple and progress
               to more complex patterns.
