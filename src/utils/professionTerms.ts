@@ -35,15 +35,15 @@ export const professionTerms: Record<Profession, ProfessionTerms> = {
     recall: "Customer Capture Rate",
   },
   engineering: {
-    positive: "Defective",
-    negative: "Functional",
-    truePositive: "Correctly Identified Defect",
-    trueNegative: "Correctly Identified Functional",
-    falsePositive: "False Defect Alert",
-    falseNegative: "Missed Defect",
-    accuracy: "Overall Quality Control Accuracy",
-    precision: "Defect Detection Reliability",
-    recall: "Defect Detection Rate",
+    positive: "Positive Class",
+    negative: "Negative Class",
+    truePositive: "True Positive (Correct Prediction)",
+    trueNegative: "True Negative (Correct Prediction)",
+    falsePositive: "Type I Error (False Alarm)",
+    falseNegative: "Type II Error (Missed Detection)",
+    accuracy: "Model Accuracy",
+    precision: "Positive Predictive Value (Precision)",
+    recall: "Sensitivity (True Positive Rate)",
   },
 };
 
@@ -51,12 +51,12 @@ export const professionDescriptions: Record<Profession, string> = {
   medical: "Diagnose diseases and predict patient outcomes",
   finance: "Assess credit risk and detect fraudulent transactions",
   marketing: "Predict customer conversion and campaign success",
-  engineering: "Detect defects and ensure quality control",
+  engineering: "Build and evaluate ML models with classification metrics",
 };
 
 export const professionIcons: Record<Profession, string> = {
   medical: "🏥",
   finance: "💰",
   marketing: "📊",
-  engineering: "⚙️",
+  engineering: "🤖",
 };
