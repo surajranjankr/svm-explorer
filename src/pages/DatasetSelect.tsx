@@ -82,13 +82,10 @@ const DatasetSelect = () => {
                   onClick={() => handleDatasetSelect(dataset.type)}
                 >
                   <div className="space-y-4 flex-1">
-                    <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between">
                       <div className="p-3 rounded-lg bg-primary/10 text-primary">
                         <Icon className="w-8 h-8" />
                       </div>
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
-                        {dataset.difficulty}
-                      </span>
                     </div>
                     <div>
                       <h3 className="text-xl font-bold mb-2">{dataset.title}</h3>
