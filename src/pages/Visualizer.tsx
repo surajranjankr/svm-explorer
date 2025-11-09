@@ -25,7 +25,7 @@ const Visualizer = () => {
   const [gamma, setGamma] = useState(0.1);
 
   const rawData = useMemo(() => generateDataset(marginType), [marginType]);
-  const data = useMemo(() => identifySupportVectors(rawData, C), [rawData, C]);
+  const data = useMemo(() => identifySupportVectors(rawData, C, kernel, gamma), [rawData, C, kernel, gamma]);
   
   const confusionMatrix = useMemo(
     () => calculateConfusionMatrix(data, kernel, gamma, C),

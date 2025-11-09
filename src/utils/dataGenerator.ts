@@ -89,42 +89,69 @@ export const generateDataset = (marginType: MarginType): DataPoint[] => {
   return data;
 };
 
-// Identify support vectors (data-driven for linear)
+// Identify support vectors (data-driven; consistent with margins for all kernels)
 export const identifySupportVectors = (
   data: DataPoint[],
-  C: number
+  C: number,
+  kernel: string = "linear",
+  gamma?: number
 ): DataPoint[] => {
-  // Compute dynamic linear boundary from centroids
-  const class1 = data.filter((d) => d.label === 1);
-  const class0 = data.filter((d) => d.label === 0);
+  const marginDistance = 10 / Math.max(C, 0.1);
 
-  let a = 1, b = 1, c = -105; // fallback line x + y - 105 = 0
-  if (class1.length > 0 && class0.length > 0) {
-    const c1 = {
-      x: class1.reduce((s, p) => s + p.x, 0) / class1.length,
-      y: class1.reduce((s, p) => s + p.y, 0) / class1.length,
-    };
-    const c0 = {
-      x: class0.reduce((s, p) => s + p.x, 0) / class0.length,
-      y: class0.reduce((s, p) => s + p.y, 0) / class0.length,
-    };
-    const w = { x: c1.x - c0.x, y: c1.y - c0.y };
-    a = w.x; b = w.y;
-    const m = { x: (c1.x + c0.x) / 2, y: (c1.y + c0.y) / 2 };
-    c = -(a * m.x + b * m.y);
+  if (kernel === "linear") {
+    // Compute dynamic linear boundary from centroids
+    const class1 = data.filter((d) => d.label === 1);
+    const class0 = data.filter((d) => d.label === 0);
+
+    let a = 1, b = 1, c = -105; // fallback line x + y - 105 = 0
+    if (class1.length > 0 && class0.length > 0) {
+      const c1 = {
+        x: class1.reduce((s, p) => s + p.x, 0) / class1.length,
+        y: class1.reduce((s, p) => s + p.y, 0) / class1.length,
+      };
+      const c0 = {
+        x: class0.reduce((s, p) => s + p.x, 0) / class0.length,
+        y: class0.reduce((s, p) => s + p.y, 0) / class0.length,
+      };
+      const w = { x: c1.x - c0.x, y: c1.y - c0.y };
+      a = w.x; b = w.y;
+      const m = { x: (c1.x + c0.x) / 2, y: (c1.y + c0.y) / 2 };
+      c = -(a * m.x + b * m.y);
+    }
+
+    const norm = Math.sqrt(a * a + b * b) || 1;
+    const cAdj = c + 6 * (1 / Math.max(C, 0.1) - 1) * norm; // keep in sync with margins
+
+    return data.map((point) => {
+      const distance = Math.abs(a * point.x + b * point.y + cAdj) / norm;
+      return {
+        ...point,
+        isSupportVector: distance <= marginDistance,
+      };
+    });
   }
 
-  const norm = Math.sqrt(a * a + b * b) || 1;
-  const marginDistance = 10 / Math.max(C, 0.1);
-  const cAdj = c + 6 * (1 / Math.max(C, 0.1) - 1) * norm; // same shift as boundary
+  if (kernel === "rbf") {
+    const g = gamma || 1;
+    return data.map((point) => {
+      const centerY = 50 + 20 * Math.sin((point.x / 100) * Math.PI * 2 * g);
+      const distance = Math.abs(point.y - centerY);
+      return { ...point, isSupportVector: distance <= marginDistance };
+    });
+  }
 
-  return data.map((point) => {
-    const distance = Math.abs(a * point.x + b * point.y + cAdj) / norm;
-    return {
-      ...point,
-      isSupportVector: distance <= marginDistance,
-    };
-  });
+  if (kernel === "polynomial") {
+    const g = gamma || 1;
+    return data.map((point) => {
+      const normalized = (point.x - 50) / 50;
+      const centerY = 50 + 20 * Math.pow(normalized, 3) * g;
+      const distance = Math.abs(point.y - centerY);
+      return { ...point, isSupportVector: distance <= marginDistance };
+    });
+  }
+
+  // Default fallback (treat as linear without adjustment)
+  return data;
 };
 
 // Calculate decision boundary points based on kernel type
