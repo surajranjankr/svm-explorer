@@ -94,7 +94,8 @@ export const identifySupportVectors = (
   data: DataPoint[],
   C: number,
   kernel: string = "linear",
-  gamma?: number
+  gamma?: number,
+  degree?: number
 ): DataPoint[] => {
   const marginDistance = 10 / Math.max(C, 0.1);
 
@@ -142,9 +143,10 @@ export const identifySupportVectors = (
 
   if (kernel === "polynomial") {
     const g = gamma || 1;
+    const d = degree || 3;
     return data.map((point) => {
       const normalized = (point.x - 50) / 50;
-      const centerY = 50 + 20 * Math.pow(normalized, 3) * g;
+      const centerY = 50 + 20 * Math.pow(normalized, d) * g;
       const distance = Math.abs(point.y - centerY);
       return { ...point, isSupportVector: distance <= marginDistance };
     });
@@ -159,7 +161,8 @@ export const calculateDecisionBoundary = (
   kernel: string,
   gamma: number,
   data?: DataPoint[],
-  C?: number
+  C?: number,
+  degree?: number
 ): { x: number; y: number }[] => {
   const points: { x: number; y: number }[] = [];
 
@@ -222,9 +225,10 @@ export const calculateDecisionBoundary = (
     }
   } else if (kernel === "polynomial") {
     // Polynomial curve (illustrative)
+    const d = degree || 3;
     for (let x = 0; x <= 100; x += 2) {
       const normalized = (x - 50) / 50;
-      const y = 50 + 20 * Math.pow(normalized, 3) * gamma;
+      const y = 50 + 20 * Math.pow(normalized, d) * gamma;
       if (y >= 0 && y <= 100) {
         points.push({ x, y });
       }
@@ -239,7 +243,8 @@ export const calculateMargins = (
   kernel: string,
   C: number,
   data?: DataPoint[],
-  gamma?: number
+  gamma?: number,
+  degree?: number
 ): { upper: { x: number; y: number }[]; lower: { x: number; y: number }[] } => {
   // Margin width inversely proportional to C, clamped to reasonable visible range
   // C=0.1 -> 15, C=1 -> 8, C=10 -> 3
@@ -312,10 +317,11 @@ export const calculateMargins = (
     // Curved margins for polynomial kernel
     const upper: { x: number; y: number }[] = [];
     const lower: { x: number; y: number }[] = [];
+    const d = degree || 3;
     
     for (let x = 0; x <= 100; x += 2) {
       const normalized = (x - 50) / 50;
-      const centerY = 50 + 20 * Math.pow(normalized, 3) * (gamma || 1);
+      const centerY = 50 + 20 * Math.pow(normalized, d) * (gamma || 1);
       const yUpper = centerY + marginDistance;
       const yLower = centerY - marginDistance;
       

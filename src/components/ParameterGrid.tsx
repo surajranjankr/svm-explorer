@@ -5,9 +5,10 @@ import { DataPoint, KernelType } from "@/types/svm";
 interface ParameterGridProps {
   data: DataPoint[];
   kernel: KernelType;
+  degree?: number;
 }
 
-export const ParameterGrid = ({ data, kernel }: ParameterGridProps) => {
+export const ParameterGrid = ({ data, kernel, degree = 3 }: ParameterGridProps) => {
   const cValues = [0.1, 1, 10];
   const gammaValues = [0.01, 0.1, 1];
 
@@ -44,6 +45,7 @@ export const ParameterGrid = ({ data, kernel }: ParameterGridProps) => {
                   kernel={kernel}
                   gamma={gamma}
                   C={c}
+                  degree={degree}
                   showBoundary={true}
                 />
               </Card>

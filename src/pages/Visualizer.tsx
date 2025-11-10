@@ -23,13 +23,14 @@ const Visualizer = () => {
   const [kernel, setKernel] = useState<KernelType>("linear");
   const [C, setC] = useState(1);
   const [gamma, setGamma] = useState(0.1);
+  const [degree, setDegree] = useState(3);
 
   const rawData = useMemo(() => generateDataset(marginType), [marginType]);
-  const data = useMemo(() => identifySupportVectors(rawData, C, kernel, gamma), [rawData, C, kernel, gamma]);
+  const data = useMemo(() => identifySupportVectors(rawData, C, kernel, gamma, degree), [rawData, C, kernel, gamma, degree]);
   
   const confusionMatrix = useMemo(
-    () => calculateConfusionMatrix(data, kernel, gamma, C),
-    [data, kernel, gamma, C]
+    () => calculateConfusionMatrix(data, kernel, gamma, C, degree),
+    [data, kernel, gamma, C, degree]
   );
   const metrics = useMemo(() => calculateMetrics(confusionMatrix), [confusionMatrix]);
   const terms = professionTerms[profession];
@@ -65,7 +66,7 @@ const Visualizer = () => {
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-6">
               <div className="aspect-square max-h-[600px]">
-                <SVMPlot data={data} kernel={kernel} gamma={gamma} C={C} />
+                <SVMPlot data={data} kernel={kernel} gamma={gamma} C={C} degree={degree} />
               </div>
               <div className="mt-4 flex gap-4 text-sm">
                 <div className="flex items-center gap-2">
@@ -102,7 +103,7 @@ const Visualizer = () => {
                 />
               </TabsContent>
               <TabsContent value="grid" className="mt-6">
-                <ParameterGrid data={data} kernel={kernel} />
+                <ParameterGrid data={data} kernel={kernel} degree={degree} />
               </TabsContent>
             </Tabs>
           </div>
@@ -154,23 +155,46 @@ const Visualizer = () => {
                 </div>
 
                 {/* Gamma Parameter */}
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <Label className="text-sm font-semibold">Gamma (γ)</Label>
-                    <span className="text-sm font-mono text-muted-foreground">{gamma.toFixed(2)}</span>
+                {kernel !== "linear" && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label className="text-sm font-semibold">Gamma (γ)</Label>
+                      <span className="text-sm font-mono text-muted-foreground">{gamma.toFixed(2)}</span>
+                    </div>
+                    <Slider
+                      value={[gamma]}
+                      onValueChange={([value]) => setGamma(value)}
+                      min={0.01}
+                      max={1}
+                      step={0.01}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Defines influence of single training examples
+                    </p>
                   </div>
-                  <Slider
-                    value={[gamma]}
-                    onValueChange={([value]) => setGamma(value)}
-                    min={0.01}
-                    max={1}
-                    step={0.01}
-                    className="w-full"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Defines influence of single training examples
-                  </p>
-                </div>
+                )}
+
+                {/* Degree Parameter - Only for Polynomial */}
+                {kernel === "polynomial" && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Label className="text-sm font-semibold">Degree (d)</Label>
+                      <span className="text-sm font-mono text-muted-foreground">{degree}</span>
+                    </div>
+                    <Slider
+                      value={[degree]}
+                      onValueChange={([value]) => setDegree(value)}
+                      min={2}
+                      max={5}
+                      step={1}
+                      className="w-full"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Polynomial kernel degree
+                    </p>
+                  </div>
+                )}
               </div>
             </Card>
 

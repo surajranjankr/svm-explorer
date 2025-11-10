@@ -7,19 +7,20 @@ interface SVMPlotProps {
   kernel: string;
   gamma: number;
   C: number;
+  degree?: number;
   showBoundary?: boolean;
   className?: string;
 }
 
-export const SVMPlot = ({ data, kernel, gamma, C, showBoundary = true, className = "" }: SVMPlotProps) => {
+export const SVMPlot = ({ data, kernel, gamma, C, degree = 3, showBoundary = true, className = "" }: SVMPlotProps) => {
   const boundaryPoints = useMemo(
-    () => (showBoundary ? calculateDecisionBoundary(kernel, gamma, data, C) : []),
-    [data, kernel, gamma, C, showBoundary]
+    () => (showBoundary ? calculateDecisionBoundary(kernel, gamma, data, C, degree) : []),
+    [data, kernel, gamma, C, degree, showBoundary]
   );
 
   const margins = useMemo(
-    () => (showBoundary ? calculateMargins(kernel, C, data, gamma) : { upper: [], lower: [] }),
-    [data, kernel, gamma, C, showBoundary]
+    () => (showBoundary ? calculateMargins(kernel, C, data, gamma, degree) : { upper: [], lower: [] }),
+    [data, kernel, gamma, C, degree, showBoundary]
   );
 
   return (

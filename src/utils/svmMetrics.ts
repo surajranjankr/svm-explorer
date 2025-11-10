@@ -19,7 +19,8 @@ const predictLabel = (
   allPoints: DataPoint[],
   kernel: KernelType,
   gamma: number,
-  C: number
+  C: number,
+  degree: number = 3
 ): 0 | 1 => {
   if (kernel === "linear") {
     // Data-driven linear hyperplane using centroids
@@ -47,38 +48,21 @@ const predictLabel = (
     return decision > 0 ? 1 : 0;
   }
 
-  // For non-linear kernels, use kernel-based decision function
-  const supportVectors = allPoints.filter((p) => p.isSupportVector);
-  
-  if (supportVectors.length === 0) {
-    // Fallback if no support vectors
-    return point.y > -point.x + 105 ? 1 : 0;
+  // For RBF kernel, use the same boundary formula as visualization
+  if (kernel === "rbf") {
+    const centerY = 50 + 20 * Math.sin((point.x / 100) * Math.PI * 2 * gamma);
+    return point.y > centerY ? 1 : 0;
   }
 
-  let decision = 0;
-  
-  // SVM decision function: sum of alpha * y * K(x, x_i)
-  supportVectors.forEach((sv) => {
-    const alpha = 1.0; // Simplified - in real SVM this is learned
-    const y_i = sv.label === 1 ? 1 : -1;
-    let kernelValue = 0;
+  // For polynomial kernel, use the same boundary formula as visualization
+  if (kernel === "polynomial") {
+    const normalized = (point.x - 50) / 50;
+    const centerY = 50 + 20 * Math.pow(normalized, degree) * gamma;
+    return point.y > centerY ? 1 : 0;
+  }
 
-    switch (kernel) {
-      case "rbf":
-        kernelValue = rbfKernel(point.x, point.y, sv.x, sv.y, gamma);
-        break;
-      case "polynomial":
-        kernelValue = polynomialKernel(point.x, point.y, sv.x, sv.y, 3);
-        break;
-    }
-
-    decision += alpha * y_i * kernelValue;
-  });
-
-  const positiveSVs = supportVectors.filter(sv => sv.label === 1).length;
-  const negativeSVs = supportVectors.filter(sv => sv.label === 0).length;
-  const bias = (positiveSVs - negativeSVs) * 0.1;
-  return decision + bias > 0 ? 1 : 0;
+  // Fallback
+  return point.y > -point.x + 105 ? 1 : 0;
 };
 
 // Calculate confusion matrix
@@ -86,7 +70,8 @@ export const calculateConfusionMatrix = (
   data: DataPoint[],
   kernel: KernelType,
   gamma: number,
-  C: number
+  C: number,
+  degree: number = 3
 ): ConfusionMatrix => {
   let truePositive = 0;
   let trueNegative = 0;
@@ -94,7 +79,7 @@ export const calculateConfusionMatrix = (
   let falseNegative = 0;
 
   data.forEach((point) => {
-    const predicted = predictLabel(point, data, kernel, gamma, C);
+    const predicted = predictLabel(point, data, kernel, gamma, C, degree);
     const actual = point.label;
 
     if (predicted === 1 && actual === 1) truePositive++;
