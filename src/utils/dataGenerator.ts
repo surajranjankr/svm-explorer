@@ -56,32 +56,25 @@ export const generateDataset = (marginType: MarginType): DataPoint[] => {
       break;
 
     case "nonlinear":
-      // Circular pattern - requires kernel trick
-      const centerX = 50;
-      const centerY = 50;
-      
-      // Inner circle - Class 1
-      const innerAngles = [0, 45, 90, 135, 180, 225, 270, 315, 360];
-      innerAngles.forEach(angle => {
-        const rad = (angle * Math.PI) / 180;
-        const radius = 18 + Math.random() * 6;
-        data.push({
-          x: centerX + Math.cos(rad) * radius,
-          y: centerY + Math.sin(rad) * radius,
-          label: 1,
-        });
+      // Polynomial separable pattern - curved boundary (parabolic/cubic)
+      // Class 1: Above the polynomial curve (upper region)
+      const nonlinear1Points = [
+        { x: 20, y: 75 }, { x: 25, y: 68 }, { x: 30, y: 63 },
+        { x: 40, y: 55 }, { x: 50, y: 52 }, { x: 60, y: 55 },
+        { x: 70, y: 63 }, { x: 75, y: 68 }, { x: 80, y: 75 }
+      ];
+      nonlinear1Points.forEach(point => {
+        data.push({ ...point, label: 1 });
       });
 
-      // Outer ring - Class 0
-      const outerAngles = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5, 382.5];
-      outerAngles.forEach(angle => {
-        const rad = (angle * Math.PI) / 180;
-        const radius = 32 + Math.random() * 6;
-        data.push({
-          x: centerX + Math.cos(rad) * radius,
-          y: centerY + Math.sin(rad) * radius,
-          label: 0,
-        });
+      // Class 0: Below the polynomial curve (lower region)
+      const nonlinear0Points = [
+        { x: 20, y: 25 }, { x: 25, y: 32 }, { x: 30, y: 37 },
+        { x: 40, y: 42 }, { x: 50, y: 45 }, { x: 60, y: 42 },
+        { x: 70, y: 37 }, { x: 75, y: 32 }, { x: 80, y: 25 }
+      ];
+      nonlinear0Points.forEach(point => {
+        data.push({ ...point, label: 0 });
       });
       break;
   }
