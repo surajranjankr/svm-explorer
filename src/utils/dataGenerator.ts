@@ -56,22 +56,26 @@ export const generateDataset = (marginType: MarginType): DataPoint[] => {
       break;
 
     case "nonlinear":
-      // Polynomial separable pattern - curved boundary (parabolic/cubic)
-      // Class 1: Above the polynomial curve (upper region)
+      // Interlocking polynomial bands - requires specific polynomial degree
+      // This pattern has nested polynomial regions that RBF struggles with
+      // Class 1: Upper and lower polynomial bands
       const nonlinear1Points = [
-        { x: 20, y: 75 }, { x: 25, y: 68 }, { x: 30, y: 63 },
-        { x: 40, y: 55 }, { x: 50, y: 52 }, { x: 60, y: 55 },
-        { x: 70, y: 63 }, { x: 75, y: 68 }, { x: 80, y: 75 }
+        // Upper band
+        { x: 15, y: 75 }, { x: 25, y: 80 }, { x: 35, y: 78 },
+        { x: 50, y: 75 }, { x: 65, y: 78 }, { x: 75, y: 80 }, { x: 85, y: 75 },
+        // Lower band
+        { x: 20, y: 22 }, { x: 35, y: 18 }, { x: 50, y: 20 },
+        { x: 65, y: 18 }, { x: 80, y: 22 }
       ];
       nonlinear1Points.forEach(point => {
         data.push({ ...point, label: 1 });
       });
 
-      // Class 0: Below the polynomial curve (lower region)
+      // Class 0: Middle polynomial band (sandwiched between Class 1)
       const nonlinear0Points = [
-        { x: 20, y: 25 }, { x: 25, y: 32 }, { x: 30, y: 37 },
-        { x: 40, y: 42 }, { x: 50, y: 45 }, { x: 60, y: 42 },
-        { x: 70, y: 37 }, { x: 75, y: 32 }, { x: 80, y: 25 }
+        { x: 15, y: 48 }, { x: 25, y: 52 }, { x: 35, y: 55 },
+        { x: 45, y: 50 }, { x: 55, y: 50 }, { x: 65, y: 55 },
+        { x: 75, y: 52 }, { x: 85, y: 48 }
       ];
       nonlinear0Points.forEach(point => {
         data.push({ ...point, label: 0 });
