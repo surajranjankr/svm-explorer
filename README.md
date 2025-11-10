@@ -1,16 +1,27 @@
-# Welcome to your Lovable project
+🧠 SVM Visualizer: Learn Machine Learning Interactively
+Welcome to the SVM Visualizer, an interactive educational tool designed to demystify Support Vector Machines (SVMs) through domain-specific examples and dynamic visualizations. Whether you're in medicine, finance, marketing, or engineering, this platform helps you understand how SVMs work and how they can be applied to real-world problems.
+
+🚀 Features
+Profession-based learning paths:
+
+🏥 Medical: Diagnose diseases and predict patient outcomes
+
+💰 Finance: Assess credit risk and detect fraud
+
+📊 Marketing: Forecast campaign success and customer conversion
+
+🤖 Engineering: Build and evaluate ML models using classification metrics
 
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
+Interactive SVM visualizations:
 
-## Project info
+Hard vs. soft margin classification
 
-The project focuses on teaching SVM machine learning algorithm to the user without any coding and just using visualization
+Kernel tricks and decision boundaries
 
-The project focuses on teaching SVM algorithm in the user's terms i.e., the terms used in his daily work or profession.
+Hyperparameter tuning (C, gamma, kernel type)
 
-## What technologies are used for this project?
 
 This project is built with:
 
