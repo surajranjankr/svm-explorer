@@ -241,7 +241,9 @@ export const calculateMargins = (
   data?: DataPoint[],
   gamma?: number
 ): { upper: { x: number; y: number }[]; lower: { x: number; y: number }[] } => {
-  const marginDistance = 10 / Math.max(C, 0.1); // Margin width inversely proportional to C
+  // Margin width inversely proportional to C, clamped to reasonable visible range
+  // C=0.1 -> 15, C=1 -> 8, C=10 -> 3
+  const marginDistance = Math.min(Math.max(12 / Math.max(C, 0.1), 3), 15);
   
   if (kernel === "linear") {
     // Rebuild the same linear boundary as in calculateDecisionBoundary
