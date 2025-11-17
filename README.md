@@ -33,3 +33,11 @@ This project is built with:
 
 
 <img src="public\image_1.png" width="400">
+
+<img src="public\image_2.png" width="400">
+
+<img src="public\image_3.png" width="400">
+
+<img src="public\image_3_part2.png" width="400">
+
+<img src="public\image_3_part3.png" width="400">
