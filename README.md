@@ -30,3 +30,6 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+
+
+![My Image]("C:\Users\Suraj ranjan kumar\OneDrive\Desktop\SVM\svm-explorer\public\image_1.png")
