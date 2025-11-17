@@ -32,4 +32,4 @@ This project is built with:
 - Tailwind CSS
 
 
-![My Image]("C:\Users\Suraj ranjan kumar\OneDrive\Desktop\SVM\svm-explorer\public\image_1.png")
+<img src="public\image_1.png" width="400">
